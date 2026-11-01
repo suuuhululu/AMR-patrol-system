@@ -59,7 +59,7 @@
 
 ### 목적과 작업 순서
 
-1. `/home/hun/finalproject/day5`의 예제를 확인했다.
+1. `~/finalproject/day5`의 예제를 확인했다.
 2. `0_app.py`의 Flask 생성·경로·템플릿 표시를 기반으로 별도 `sysmon` 폴더를 만들었다.
 3. 실행, 앱 생성, 페이지 처리, HTML, CSS를 각각 분리했다.
 4. 이후 기능을 넣을 routes·services·models 패키지를 준비했다.
@@ -206,7 +206,7 @@ GET /
 3단계 최종 실행: 아래 명령으로 총 **16개 테스트 통과**. 인증 11개 + DB 5개다. 이 문서를 작성하면서 테스트를 재실행한 것은 아니며, 직전 구현 검증 결과를 기록했다.
 
 ```bash
-cd /home/hun/finalproject/sysmon
+cd ~/finalproject/sysmon
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
@@ -507,7 +507,7 @@ screen_y = height - grid_y
 
 ### 검증 결과
 
-실제 `/home/hun/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **33개 통과**를 확인했다. 기존 인증 11개·DB 5개·로봇 상태 9개와 지도 8개다. 지도 테스트는 다음 실패를 막는다.
+실제 `~/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **33개 통과**를 확인했다. 기존 인증 11개·DB 5개·로봇 상태 9개와 지도 8개다. 지도 테스트는 다음 실패를 막는다.
 
 - 지도 장치 토큰 누락·불일치와 서버 토큰 미설정.
 - frame, width/height, 최대 격자, resolution, origin, data 길이·점유값, 시간대 오류.
@@ -589,7 +589,7 @@ screen_y = height - grid_y
 
 ### 검증 결과
 
-실제 `/home/hun/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **40개 통과**를 확인했다. 기존 33개와 새 이벤트 요청 테스트 7개다. 새 테스트는 장치 토큰·multipart, 메타데이터·시간대·미래 시각, 이미지 형식·빈 파일·크기, 이벤트와 이미지 경로 저장, 정확한 재전송·ID 충돌, 비로그인 차단과 증거 폴더 밖 경로 차단을 확인한다.
+실제 `~/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **40개 통과**를 확인했다. 기존 33개와 새 이벤트 요청 테스트 7개다. 새 테스트는 장치 토큰·multipart, 메타데이터·시간대·미래 시각, 이미지 형식·빈 파일·크기, 이벤트와 이미지 경로 저장, 정확한 재전송·ID 충돌, 비로그인 차단과 증거 폴더 밖 경로 차단을 확인한다.
 
 별도 임시 5006번 Flask 서버에서 `tools/send_demo_event.py`를 실행했다. HTTP 201 `accepted`를 받고 `events`에 AMR1·FIRE·HIGH·NEW 행, `event_evidence`에 같은 event_id의 PNG 경로, `instance/evidence`에 실제 PNG 한 장이 저장된 것을 확인했다. 이 데이터와 서버는 임시 작업 사본에만 존재하며 실제 프로젝트 DB에는 복사하지 않는다. 실제 ROS 이벤트·카메라 토픽과 실제 촬영 이미지는 아직 연결하지 않았다.
 
@@ -669,7 +669,7 @@ screen_y = height - grid_y
 
 ### 검증 결과
 
-실제 `/home/hun/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **43개 통과**를 확인했다. 기존 40개와 새 이벤트 UI·처리 요청 테스트 3개다. 새 테스트는 목록·상세·보호 이미지 URL·최초 HTML, 조회자의 변경 차단, 관제자의 세 단계 순차 전이와 메모 이력, 명령 미생성, CSRF·잘못된 요청·500자 초과·없는 이벤트 처리를 확인한다.
+실제 `~/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **43개 통과**를 확인했다. 기존 40개와 새 이벤트 UI·처리 요청 테스트 3개다. 새 테스트는 목록·상세·보호 이미지 URL·최초 HTML, 조회자의 변경 차단, 관제자의 세 단계 순차 전이와 메모 이력, 명령 미생성, CSRF·잘못된 요청·500자 초과·없는 이벤트 처리를 확인한다.
 
 임시 5007번 서버에서 관제자 계정으로 로그인해 AMR1·AMR2 이벤트 2건, 위험도 상·중, 증거 썸네일과 상세 이미지를 확인했다. AMR2 이벤트를 `신규 → 확인중`으로 변경하고 메모와 사용자·변경 시각이 상세 이력에 표시되는 것도 확인했다. 브라우저 오류 로그는 없었으며 문서 너비 1265px, 뷰포트 1280px로 전체 가로 넘침이 없었다. 임시 계정·이벤트·DB는 실제 프로젝트에 복사하지 않는다.
 
@@ -726,7 +726,7 @@ AMR1·AMR2와 고정 웹캠 1·2의 영상 자리를 실제 데이터 입력과 
 
 ### 검증 결과와 남은 일
 
-실제 `/home/hun/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **49개 통과**를 확인했다. 기존 43개와 영상 테스트 6개이며 인증·입력 형식·파일 한 장 덮어쓰기·중복·충돌·오래된 프레임·로그인 보호·네 카메라 목록·5초 단절을 검사한다.
+실제 `~/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **49개 통과**를 확인했다. 기존 43개와 영상 테스트 6개이며 인증·입력 형식·파일 한 장 덮어쓰기·중복·충돌·오래된 프레임·로그인 보호·네 카메라 목록·5초 단절을 검사한다.
 
 임시 5008번 Flask 서버와 실제 브라우저에서 `send_demo_video.py`로 네 카메라를 2 FPS로 전송했다. 네 영상 카드의 서로 다른 시연 이미지와 `LIVE`, `방금 수신`을 확인했다. 전송 종료 후 5초가 지나면 네 카드 모두 최근 프레임을 유지하면서 `연결 끊김`과 마지막 수신 시각을 표시했다. 시연 데이터·계정은 임시 경로만 사용했다.
 
@@ -783,7 +783,7 @@ DB에 저장된 과거 기록을 관제자가 한 화면에서 조건별로 찾�
 
 ### 검증 결과와 남은 일
 
-실제 `/home/hun/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **55개 통과**를 확인했다. 기존 49개와 통합 이력 테스트 6개다. 새 테스트는 로그인 보호, 다섯 기록 종류의 시간순 UNION, `commands` 제외, 증거 이미지 URL, 로봇·위험도·처리 상태·메모·관측점·한국 날짜 검색, 잘못된 조건, 50건 페이지와 대시보드 메뉴를 확인한다.
+실제 `~/finalproject/sysmon` 반영 후 임시 테스트 DB에서 전체 테스트 **55개 통과**를 확인했다. 기존 49개와 통합 이력 테스트 6개다. 새 테스트는 로그인 보호, 다섯 기록 종류의 시간순 UNION, `commands` 제외, 증거 이미지 URL, 로봇·위험도·처리 상태·메모·관측점·한국 날짜 검색, 잘못된 조건, 50건 페이지와 대시보드 메뉴를 확인한다.
 
 임시 5009번 서버와 실제 브라우저에서 전체 다섯 기록의 한글 시각·종류·상태·담당자·증거 링크를 확인했다. 화면에서 기록 종류를 화재 이벤트, 위험도를 상으로 선택해 제출했고 결과가 5건에서 해당 사건 1건으로 줄어드는 것을 확인했다. 임시 계정과 데이터는 실제 프로젝트 DB에 복사하지 않는다.
 
@@ -1210,7 +1210,7 @@ EStopState ───→ 최신 1행 + 활성·해제가 바뀐 시점만 이력
 - 배경: 관제 설계 제안(Sysmon 팀 소통사항 3.1~3.7)을 현재 구현과 대조했다. 3.3 STALE·UNREPORTED 분리, 3.6 TRANSIENT_LOCAL 복원, 3.7 Dashboard 제외 목록은 이미 같은 방식이었다.
 - **증적 지연·누락(3.5 일부) 반영**: 저장값 `INCOMPLETE`·`STORED`·`REJECTED`는 그대로 두고, 조립이 끝나지 않은 경과 시간으로 화면에서 `DELAYED`(기본 30초)·`MISSING`(기본 300초)을 계산한다. 관제가 없는 결과를 만들어 저장하지 않는다는 원칙을 지키기 위해 파생 표시로만 구분했다.
   - 변경 파일: `app/__init__.py`(임계값 2개), `app/models/event.py`(목록·상세 조회에 조립 상태 join), `app/services/event_service.py`(`evidence_state`, 라벨), `app/static/js/events.js`·`dashboard.css`(주황 표시), `tests/test_detection_ingestion.py`.
-- **당시 작업 기록 `CR-003` 작성(현재 저장소에 파일 없음)**: `/control/operational_state`·`/control/operational_event` 도입에 동의하되 21단계 이후 반영을 제안했다. 새 메시지 두 개가 계약 v1.1과 네 PC 재빌드를 요구하고, 현재 자체 계산 중인 STALE·UNREPORTED·CCTV timeout과 판단 주체가 겹치기 때문이다. 필드명 `event_id` 충돌과 전환 시점도 확정 대상으로 적었다. 현행 공용 전달 계약은 [TBD-IF-011](../../../docs/interfaces.md#tbd)이다.
+- **당시 작업 기록 `CR-003` 작성(현재 저장소에 파일 없음)**: `/control/operational_state`·`/control/operational_event` 도입에 동의하되 21단계 이후 반영을 제안했다. 새 메시지 두 개가 계약 v1.1과 네 PC 재빌드를 요구하고, 현재 자체 계산 중인 STALE·UNREPORTED·CCTV timeout과 판단 주체가 겹치기 때문이다. 필드명 `event_id` 충돌과 전환 시점도 확정 대상으로 적었다. 현행 공용 전달 계약은 [TBD-IF-011](../../../docs/interfaces.md)이다.
   - 같은 요청서에 PostgreSQL 전환은 13단계 측정치를 근거로 운영 전환 과제로 남기고, durable spool은 계약 3.8절의 생산자 재전송과 중복이라는 검토 결과를 함께 남겼다.
 - 검증: `.venv` 115개 통과, ROS를 source한 전체 시험도 통과. 새 시험은 조각이 하나만 도착한 증적이 시간 경과에 따라 `INCOMPLETE → DELAYED → MISSING`으로 바뀌고, 나머지 조각이 도착하면 `STORED`가 되는 것을 확인한다.
 
@@ -1291,3 +1291,9 @@ flowchart TD
 - 설계 이유: 0을 "모름"으로 받으면 상대가 값을 안 채워도 저장되므로 거부한다. 억제는 `event_id`가 매번 바뀌는 보고에 대한 서버 측 방어이며, 응답은 DUPLICATE로 돌려 상대가 재전송을 멈추게 한다. 기준선 v1.1의 종류 값과 같은 숫자를 써 상대가 `DetectionCandidate` 값을 그대로 넣을 수 있다.
 - 검증: `tests/` 128개 통과(skip 7, 신규 억제 시험 1·종류 시험 보강). 재빌드 후 임시 DB로 어댑터를 띄워 5회 호출: STORED → DUPLICATE → REJECTED(내용 다름) → REJECTED(robot9) → DUPLICATE(60초 억제, detail에 사유). 사건 1행·파일 1장만 남았다.
 - 남은 일: 억제 창 60초와 종류만 키로 쓰는 규칙은 운영값 확인 필요. 요청서를 6개 필드로 갱신해 전달한다.
+
+## 41. patrol_interfaces 2.1.0 반영 (2026-09-13)
+
+- 목적: 공용 인터페이스가 2.1.0이 됐다. 2.0.0에 `srv/SetEStop.srv`와 Patrol Result `REASON_LOW_BATTERY=11`을 더하고, 어느 노드도 쓰지 않던 `DetectionEvidence`·`MissionExecutionEvent`를 뺐다. 남은 타입의 필드는 그대로다. 시스템 모니터는 뺀 두 타입을 쓰지 않는다.
+- 변경 파일·함수: 시스템 모니터 코드는 바꾸지 않았다. `/control/estop`은 이제 관제가 실제로 발행하므로 기존 EStop 구독이 그대로 이력을 남긴다. Result `reason_code`는 정수로 저장하므로 11도 그대로 받는다. `tests/test_ros_adapter.py`·`testkit/ros_topic_test.py`의 영상 토픽명을 37절의 실제 이름(`/robot1/oakd/rgb/preview/image_raw/compressed`, `/robot6/oakd/rgb/image_raw/compressed`, `/vision/cctv/gate_image/compressed`, `/vision/cctv/center_image/compressed`)으로 다시 맞췄다. 2026-09-09 병합에서 예전 이름으로 되돌아가 있었다.
+- 검증: `tests/` 전체 통과.

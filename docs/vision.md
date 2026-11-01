@@ -1,6 +1,8 @@
 # CCTV 비전 기능 설계
 
-상태: `patrol_interfaces 2.0.0` CameraState 계약 적용 · 실제 PC 간 통합시험 미실시 · 담당: 비전(PC 4) · 공통 계약: [interfaces.md](interfaces.md)
+> 기준일: 2026-09-13 · 계약: `patrol_interfaces 2.1.0`(CameraState는 2.0.0과 같음) · 담당: 비전(PC 4) · 공통 계약: [interfaces.md](interfaces.md)
+>
+> 상태: 프로젝트 시연에서 실제 CCTV로 사용
 
 ## 1. 책임
 
@@ -16,7 +18,7 @@ PC 4 ROS 참여자는 PC 3 Offboard Discovery Server의 Client다. 구체적 CCT
 
 ## 2. 이벤트 처리
 
-CameraState 필드는 interfaces.md 6절을 따른다. vehicle_track_id는 제거된 항목이다. topic별로 허용되지 않은 enum 또는 camera_id는 폐기하고 진단 로그를 남긴다(문서 하단 CR 반영 내역, cam_master가 topic-camera_id 일치도 함께 검증한다).
+CameraState 필드는 [interfaces.md 8절](interfaces.md#8-cctv-차량-상태)을 따른다. vehicle_track_id는 제거된 항목이다. topic별로 허용되지 않은 enum 또는 camera_id는 폐기하고 진단 로그를 남긴다(문서 하단 CR 반영 내역, cam_master가 topic-camera_id 일치도 함께 검증한다).
 
 cam_master는 event_id를 로컬 중복 제거 기간 동안 보관해 같은 이벤트를 한 번만 처리한다. CCTV 이벤트는 RELIABLE/VOLATILE이며 과거 이벤트 재생을 위해 TRANSIENT_LOCAL을 사용하지 않는다. 최종 CameraState는 UNKNOWN=0, ENTERING=1, EXITED=2, PARKED=3, EXITING=4이며 ID 생성·camera_id 규칙은 문서 하단 CR 반영 내역을 따른다.
 
@@ -28,7 +30,7 @@ confidence 필드는 존재하며, 차량 상태 확정에 쓰인 유효 구간(
 
 - 카메라 입력: imgsz=512, YOLO 탐지 confidence 임계값=0.7
 - gate 라인 위치: 좌측 라인 비율 0.32, 우측 라인 비율 0.70, ROI 상단 비율 0.45, ROI 하단 비율 0.95 (화면 가로/세로 비율 기준)
-- center ROI 좌표: TOP=(0.2, 0.15, 0.62, 0.32), BOTTOM=(0.05, 0.76, 0.7, 1.00) (비율 좌표, x1·y1·x2·y2)
+- center ROI 좌표: TOP=(0.25, 0.15, 0.62, 0.32), BOTTOM=(0.05, 0.76, 0.7, 1.00) (비율 좌표, x1·y1·x2·y2)
 - PARKED 확정 체류시간: 5.0초
 - 이벤트 쿨다운: 2.0초 (같은 차량이 이 시간 안에 재발행하지 않도록 방지)
 - 연속 상태 확정 기준: 0.2초(monotonic 연속 유지, 문서 하단 CR 반영 내역)
@@ -48,7 +50,7 @@ confidence 필드는 존재하며, 차량 상태 확정에 쓰인 유효 구간(
 
 ENTERING → PARKED는 진입 이벤트 쌍이다. EXITING → EXITED는 독립적인 출차 이벤트 쌍이다. PARKED → EXITING을 필수 연결 전이로 정의하지 않는다. 독립 출차 이벤트를 처리할 수 있어야 한다.
 
-cam_master는 patrol_allowed가 바뀌면 즉시 발행하고, 바뀌지 않아도 5Hz로 현재 값을 반복 발행한다(문서 하단 CR 반영 내역, CR-관제_09-07_17-53_비전_CameraState와_permit_반영 4절). 통신 timeout 시 관제가 5초 기준으로 경고를 판단하고 마지막 patrol_allowed 값을 유지하며, 시스템 모니터는 관제가 제공한 판단 결과만 표시·기록한다. 임의로 false로 변경하지 않는다. 단, 이 정책이 token·E-stop 등 별도 안전 게이트를 무효화하지 않는다.
+cam_master는 patrol_allowed가 바뀌면 즉시 발행하고, 바뀌지 않아도 5 Hz로 현재 값을 반복 발행한다(문서 하단 CR 반영 내역, CR-관제_09-07_17-53_비전_CameraState와_permit_반영 4절). 통신 timeout 시 관제가 5초 기준으로 경고를 판단하고 마지막 patrol_allowed 값을 유지하며, 시스템 모니터는 관제가 제공한 판단 결과만 표시·기록한다. 임의로 false로 변경하지 않는다. 단, 이 정책이 token·E-stop 등 별도 안전 게이트를 무효화하지 않는다.
 
 patrol_allowed는 관제 판단 조건이며 AMR에 직접 주행·정지 명령을 발행하지 않는다. 차량 진입을 사람이 직접 제어하므로 vehicle_entry_block 토픽은 만들지 않는다. 관제의 대피·재개 순서는 [integration.md](integration.md)를 따른다.
 
@@ -68,15 +70,15 @@ patrol_allowed는 관제 판단 조건이며 AMR에 직접 주행·정지 명령
 
 ## 5. 검증
 
-정상 진입 쌍과 독립 출차 쌍, topic별 enum·camera_id 검증, 중복 제거, timeout 시 마지막 값 유지, 관제 대피·재개 연계를 확인한다. [CCTV 통합시험](integration.md#it-07-cctv)을 참조한다.
+정상 진입 쌍과 독립 출차 쌍, topic별 enum·camera_id 검증, 중복 제거, timeout 시 마지막 값 유지, 관제 대피·재개 연계를 확인한다. [CCTV 통합시험](integration.md#it-11-cctv)을 참조한다.
 
-CameraState 자동 시험은 `src/patrol_vision/test/test_p0_camerastate.py`에 있다. 현재 2개 시험은 CameraState enum 0~4, camera ID, topic별 허용 상태, patrol_allowed 매핑과 5 Hz 상수를 확인한다. event_id·source_session_id 생성, restart_sequence, 0.2초 실측 경계, topic-camera_id 거부, 순서 역전과 실제 프레임 처리는 이 시험 범위 밖이며 통합시험에서 확인한다.
+CameraState 테스트는 `src/patrol_vision/test/test_p0_camerastate.py`에 있다. 현재 2개 시험은 CameraState enum 0~4, camera ID, topic별 허용 상태, patrol_allowed 매핑과 5 Hz 상수를 확인한다. event_id·source_session_id 생성, restart_sequence, 0.2초 실측 경계, topic-camera_id 거부, 순서 역전과 실제 프레임 처리는 이 시험 범위 밖이며 통합시험에서 확인한다.
 
 ## TBD
 
-TBD-VIS-001(카메라 입력·확정 기준·장애 판단)과 TBD-VIS-002(순서 역전·재시작 정책)는 2026-09-07 확정되어 각각 2-1절·4-1절 본문에 반영됐다. 비전 내부 TBD는 없지만 카메라 장애의 공용 전달은 차기 버전 TBD-IF-010이다.
+TBD-VIS-001(카메라 입력·확정 기준·장애 판단)과 TBD-VIS-002(순서 역전·재시작 정책)는 2026-09-07에 확정되어 각각 2-1절·4-1절 본문에 반영됐다. 비전 내부 TBD는 없지만 카메라 장애의 공용 전달은 차기 버전 TBD-IF-010이다.
 
-CameraState 패키지·필드·enum·event_id·camera_id·QoS는 `patrol_interfaces 2.0.0` 최종 계약을 따른다. permit 5 Hz는 기존 비전 구현 기준을 유지한다. 카메라 장애의 별도 공용 전달 인터페이스는 현재 최종 목록에 포함하지 않는다.
+CameraState 패키지·필드·enum·event_id·camera_id·QoS는 `patrol_interfaces 2.1.0`을 따른다(2.0.0에서 바뀌지 않음). permit 5 Hz는 기존 비전 구현 기준을 유지한다. 카메라 장애의 별도 공용 전달 인터페이스는 현재 최종 목록에 포함하지 않는다.
 
 ## CR 반영 내역: CR-관제_09-07_17-53_비전_CameraState와_permit_반영 (2026-09-07)
 
@@ -86,10 +88,10 @@ CameraState 패키지·필드·enum·event_id·camera_id·QoS는 `patrol_interfa
 | event_id | 위 파일 `build_event_id()` | `cam-<source_session_id>-<state소문자>-<source_sequence 4자리>` |
 | source_session_id | 위 파일 `build_source_session_id()` | `<camera_id>-<YYYYMMDDTHHMMSS>-<restart_sequence 2자리>` |
 | restart_sequence | 위 파일 `load_and_bump_restart_sequence()` | 노드별 로컬 카운터 파일에서 +1, 없거나 손상 시 1 |
-| 확정 기준 | 위 파일 `_on_detection`/`_on_no_detection` | `CONFIRM_SECONDS=0.2`, `time.monotonic()` 연속 유지. 미검출·조건 이탈 시 즉시 초기화(PARKED 5초 dwell 제외) |
+| 확정 기준 | 위 파일 `_on_detection`/`_on_no_detection` | 0.2초를 `time.monotonic()` 기준으로 연속 유지. 미검출·조건 이탈 시 즉시 초기화(PARKED 5초 dwell 제외) |
 | confidence | 위 파일 `_publish_state` | ENTERING/EXITED/EXITING: 0.2초 구간 평균, PARKED: 마지막 0.2초 구간 평균 |
 | topic-camera_id 검증 | cam_master.py `_handle_event` | 불일치 시 폐기 |
-| patrol_allowed 발행 | cam_master.py `_republish_patrol_allowed` | 변경 즉시 발행 + 5Hz(`PATROL_ALLOWED_PUBLISH_HZ=5.0`) 반복 발행 |
+| patrol_allowed 발행 | cam_master.py `_republish_patrol_allowed` | 변경 즉시 발행 + 5 Hz(`PATROL_ALLOWED_PUBLISH_HZ=5.0`) 반복 발행 |
 | CameraState 필드 | `patrol_interfaces/msg/CameraState.msg` | `source_session_id`(string), `source_sequence`(uint64) 추가 |
 
-관제 수신부(5초 timeout, Bool 3회 연속 수신 기반 복구)는 이번 반영에 포함하지 않음(관제 담당).
+관제 수신부(5초 timeout, Bool 3회 연속 수신 기반 복구)는 이번 반영에 포함하지 않는다(관제 담당).
